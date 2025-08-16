@@ -1,0 +1,109 @@
+C:\Users\Jahnavi>psql -U postgres -d postgres
+Password for user postgres:
+
+psql (16.10)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE TABLE sales (
+postgres(#   order_id      VARCHAR(50),
+postgres(#   product_id    VARCHAR(50),
+postgres(#   customer_id   VARCHAR(50),
+postgres(#   order_date    DATE,
+postgres(#   quantity      INT,
+postgres(#   unit_price    NUMERIC,
+postgres(#   total_amount  NUMERIC
+postgres(# );
+CREATE TABLE
+postgres=# \copy sales FROM 'C:/Users/Jahnavi/Downloads/archive-7/retail_sales_dataset' CSV HEADER DELIMITER ',';
+C:/Users/Jahnavi/Downloads/archive-7/retail_sales_dataset: No such file or directory
+postgres=# \copy sales FROM 'C:/Users/Jahnavi/Downloads/retail_sales_dataset.csv' CSV HEADER DELIMITER ',';
+ERROR:  extra data after last expected column
+CONTEXT:  COPY sales, line 2: "1,24-11-2023,CUST001,Male,34,Beauty,3,50,150"
+postgres=#
+postgres=# DROP TABLE IF EXISTS sales;
+DROP TABLE
+postgres=# CREATE TABLE sales (
+postgres(#     transaction_id   INT,
+postgres(#     order_date       DATE,
+postgres(#     customer_id      VARCHAR(20),
+postgres(#     gender           VARCHAR(10),
+postgres(#     age              INT,
+postgres(#     product_category VARCHAR(50),
+postgres(#     quantity         INT,
+postgres(#     unit_price       NUMERIC,
+postgres(#     total_amount     NUMERIC
+postgres(# );
+CREATE TABLE
+postgres=# \copy sales FROM 'C:/Users/Jahnavi/Downloads/retail_sales_dataset.csv' CSV HEADER DELIMITER ',';
+COPY 1000
+postgres=# \o C:/Users/Jahnavi/OneDrive/Desktop/output_file_retailsales.txt
+postgres=# SELECT SUM(total_amount) AS total_revenue
+postgres-# FROM sales;
+postgres=# SELECT gender,
+postgres-#        SUM(total_amount) AS total_sales,
+postgres-#        ROUND(100.0 * SUM(total_amount) / SUM(SUM(total_amount)) OVER (), 2) AS pct_of_total
+postgres-# FROM sales
+postgres-# GROUP BY gender;
+postgres=# SELECT product_category,
+postgres-#        SUM(total_amount) AS category_sales
+postgres-# FROM sales
+postgres-# GROUP BY product_category
+postgres-# ORDER BY category_sales DESC;
+postgres=# SELECT customer_id,
+postgres-#        SUM(total_amount) AS total_spend
+postgres-# FROM sales
+postgres-# GROUP BY customer_id
+postgres-# ORDER BY total_spend DESC
+postgres-# LIMIT 5;
+postgres=# SELECT DATE_TRUNC('month', order_date) AS month,
+postgres-#        SUM(total_amount) AS revenue
+postgres-# FROM sales
+postgres-# GROUP BY month
+postgres-# ORDER BY month;
+postgres=# WITH monthly AS (
+postgres(#     SELECT DATE_TRUNC('month', order_date) AS month,
+postgres(#            SUM(total_amount) AS revenue
+postgres(#     FROM sales
+postgres(#     GROUP BY month
+postgres(# )
+postgres-# SELECT month,
+postgres-#        revenue,
+postgres-#        LAG(revenue) OVER (ORDER BY month) AS prev_month,
+postgres-#        ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY month)) / NULLIF(LAG(revenue) OVER (ORDER BY month),0), 2) AS mom_growth_pct
+postgres-# FROM monthly;
+postgres=# SELECT CASE
+postgres-#          WHEN age BETWEEN 18 AND 25 THEN '18-25'
+postgres-#          WHEN age BETWEEN 26 AND 35 THEN '26-35'
+postgres-#          WHEN age BETWEEN 36 AND 45 THEN '36-45'
+postgres-#          WHEN age BETWEEN 46 AND 60 THEN '46-60'
+postgres-#          ELSE '60+'
+postgres-#        END AS age_group,
+postgres-#        ROUND(AVG(total_amount),2) AS avg_spend
+postgres-# FROM sales
+postgres-# GROUP BY age_group
+postgres-# ORDER BY age_group;
+postgres=# SELECT product_category,
+postgres-#        COUNT(*) AS transactions
+postgres-# FROM sales
+postgres-# GROUP BY product_category
+postgres-# ORDER BY transactions DESC
+postgres-# LIMIT 1;
+postgres=# SELECT product_category,
+postgres-#        ROUND(AVG(unit_price),2) AS avg_unit_price,
+postgres-#        SUM(quantity) AS total_units_sold,
+postgres-#        SUM(total_amount) AS total_sales
+postgres-# FROM sales
+postgres-# GROUP BY product_category
+postgres-# ORDER BY total_sales DESC;
+postgres=# SELECT customer_id,
+postgres-#        COUNT(DISTINCT transaction_id) AS total_orders,
+postgres-#        SUM(total_amount) AS lifetime_value,
+postgres-#        ROUND(AVG(total_amount),2) AS avg_order_value
+postgres-# FROM sales
+postgres-# GROUP BY customer_id
+postgres-# ORDER BY lifetime_value DESC
+postgres-# LIMIT 10;
+postgres=#
