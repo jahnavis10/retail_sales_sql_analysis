@@ -22,8 +22,8 @@ retail-sql-project/
 └── README.md 
 
 ### 🚀 Key Queries & Insights
-Total Sales – ₹456,000 overall revenue.
-Sales by Gender – Female customers contributed 51.06%, Male customers 48.94%.
-Top Category – Electronics (₹156,905) contributed the highest sales, slightly ahead of Clothing and Beauty.
-Monthly Growth – Month-over-month (MoM) growth peaked at +97.21% in Oct 2023.
-Top Customers – The top 10 customers (each spending ₹2,000) together contributed a noticeable share of total sales, highlighting repeat but evenly distributed spending patterns.
+1. Total Sales – ₹456,000 overall revenue.
+2. Sales by Gender – Female customers contributed 51.06%, Male customers 48.94%.
+3. Top Category – Electronics (₹156,905) contributed the highest sales, slightly ahead of Clothing and Beauty.
+4. Monthly Growth – Month-over-month (MoM) growth peaked at +97.21% in Oct 2023.
+5. Top Customers – The top 10 customers (each spending ₹2,000) together contributed a noticeable share of total sales, highlighting repeat but evenly distributed spending patterns.
